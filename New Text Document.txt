@@ -1,0 +1,25 @@
+# Lithnet MIIS Automation Module
+#httpsgithub.comlithnetmiis-powershell
+Import-Module LithnetMiisAutomation
+
+$date = Get-Date
+$DateStr = $date.ToString(yyyyMMdd)
+
+
+$queries = @()
+$Queries += New-MVQuery -Attribute employeeStartDate -Operator Contains -Value $DateStr
+
+
+$QueryResults = Get-MVObject -Queries $queries
+
+
+# Get a subset of the attribures 
+ $userdetails = $QueryResults  foreach {
+    New-Object PSObject -prop @{
+            Name = $QueryResults.Attributes.displayName.values.valuestring;
+            Email = $QueryResults.Attributes.mail.values.valuestring;
+            
+    }
+}
+
+$userdetails   Export-CSV -Path CResults.csv -NoTypeInformation
