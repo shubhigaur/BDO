@@ -13,54 +13,19 @@ bool IMVSynchronization.ShouldDeleteFromMV(CSEntry csentry, MVEntry mventry)
 
             if (mventry["employeeStatus"].Value = "Active" && !ManagementAgent.Connectors.Contains("Testcsv"))
             {
-                DeprovisionAction tempDeprovision;
+                
 
                 const int ADS_UF_ACCOUNTDISABLE = 0X2;
-
-                const int ADS_UF_PASSWD_NOTREQD = 0X20;
-
-                const int ADS_UF_NORMAL_ACCOUNT = 0X200;
-
-                ReferenceValue ADDisabledContainer = "OU=DisabledAccounts,DC=HO,DC=AD,DC=UAT";
-                switch (csentry.ObjectType)
-
+                long currentValue = 0;
+                if (mventry[“mcsuserAccountControl”].IsPresent)
                 {
-                    case “user”:
-                      long currentValue = 0;
-                        if (mventry[“userAccountControl”].IsPresent)
-
-                        {
-                            currentValue = mventry[“userAccountControl”].IntegerValue;
-                        }
-                        else
-                        {
-                            currentValue = ADS_UF_NORMAL_ACCOUNT;
-                        }
-
-                        mventry[“userAccountControl”].IntegerValue = currentValue | ADS_UF_ACCOUNTDISABLE | ADS_UF_PASSWD_NOTREQD;
-
-                        mventry[PresentInHR].Value = False;
-
-                        string rdn = “CN =” +mventry[“cn”].Value;
-
-                        ManagementAgent ma = Utils.MAs[ADMA];
-
-                        ReferenceValue dn = ma.EscapeDNComponent(rdn).Concat(ADDisabledContainer);
-
-                        mventry.DN = dn;
-
-                        tempDeprovision = DeprovisionAction.Disconnect;
-
-                        break;
-
-                    default:
-
-                        throw new UnexpectedDataException(“There are no deprovisioning rules setup for ” +mventry.ObjectType) ;
-
+                currentValue = csentry[“mcsuserAccountControl”].IntegerValue;
+                currentValue = ADS_UF_ACCOUNTDISABLE;
+                
                 }
-
-                return tempDeprovision;
             }
+               
+            
 
         }
 
