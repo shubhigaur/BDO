@@ -1,0 +1,14 @@
+$When = ((Get-Date).AddDays(-30)).Date
+
+$ous = 'OU=MDI,DC=GaurBiz,DC=in','OU=Service Accounts,DC=GaurBiz,DC=in'
+$results = @()
+foreach ($ou in $ous){
+foreach ($user in Get-ADUser -Filter {whenCreated -ge $When} -SearchBase $ou -Properties *){
+$obj = New-Object -TypeName PSObject
+$obj | Add-Member -MemberType NoteProperty -Name SamAccountName -Value $user.samaccountname
+$obj | Add-Member -MemberType NoteProperty -Name mail -Value $user.mail
+$obj | Add-Member -MemberType NoteProperty -Name givenname -Value $user.givenname
+$results += $obj
+}
+}
+$results | Export-CSV -Path "C:\ADquery.csv" -NoTypeInformation 
