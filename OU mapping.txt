@@ -1,0 +1,40 @@
+<#
+    .SYNOPSIS
+        Example script to bulk update users from CSV file.
+        The CSV file needs to have columnnames in row 1.
+        Columnnames need to correspond to the attribute name in FIM/MIM.
+        The column specified as "anchor" will not be updated all other columns will be updated based on content in csv file.
+        Multivalue and Reference data types are not supported in this version.
+        The script requires that the Lithnet Power Shell module is installed on the computer running the script.
+        The account running the script requires write permission to all attributes in the csv file except for the anchor attribute.
+#>
+
+PARAM(
+    [string]$CSVFile = 'C:\Temp\CSVUsers.txt',
+    [string]$Delimiter = ',',
+    [string]$Anchor = 'AccountName',
+    [string]$ResourceType = 'Person',
+    [string]$FIMServiceURI = 'http://localhost:5725'
+    )
+
+#region Lithnet
+if(!(Get-Module -Name LithnetRMA))
+{
+Import-Module LithnetRMA;
+}
+
+Set-ResourceManagementClient -BaseAddress $FIMServiceURI;
+#endregion Lithnet
+
+$Objects = Import-Csv -Delimiter $Delimiter -Path $CSVFile
+$Attributes = (Get-Content $CSVFile)[0] -split $Delimiter | ?{$_ -ne $Anchor}  
+
+ForEach($Object in $Objects)
+    {
+        $resource = Get-Resource -ObjectType $ResourceType -AttributeName $Anchor -AttributeValue ($Object.psobject.Properties | ?{$_.Name -eq $Anchor}).Value -AttributesToGet $Attributes
+        ForEach ($Attribute in $Attributes)
+            {
+                ($resource.psobject.Properties | ?{$_.Name -eq $Attribute}).Value = ($Object.psobject.Properties | ?{$_.Name -eq $Attribute}).Value
+            }
+        $resource | Save-Resource
+    }
