@@ -1,0 +1,10 @@
+OU=00001,OU=Main Bank,OU=Branches,DC=HO,DC=AD,DC=UAT
+OU=00002,OU=Main Bank,OU=Branches,DC=HO,DC=AD,DC=UAT
+OU=00003,OU=Main Bank,OU=Branches,DC=HO,DC=AD,DC=UAT
+OU=00004,OU=Main Bank,OU=Branches,DC=HO,DC=AD,DC=UAT
+
+
+Branch Banking Group; Region 2-Metro Manila North; Cubao Area; Aurora Blvd.-Yale Branch
+Branch Banking Group; Region 3-Metro Manila West; Manila 1 Area; C.M. Recto Branch
+Branch Banking Group; Region 5-Metro Manila South; Pasay Area; Baclaran Branch
+Branch Banking Group; Region 4-Metro Manila East; Makati Central Area; SM Makati Branch
